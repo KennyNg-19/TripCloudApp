@@ -1,0 +1,6 @@
+numpy
+pandas
+streamlit
+geocoder
+geopy
+bokeh==2.2.2
