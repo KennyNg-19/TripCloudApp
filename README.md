@@ -11,4 +11,4 @@ A simple web-based app for Cloud Computing group assignment
 
 ## Run 运行
 
-> streamlit run map.py
+> streamlit run app.py
