@@ -114,6 +114,7 @@ st.write(p)
 
 # 获取用户选择的目的地
 df_K_closest = df_K_closest.iloc[:-1] # 已经显示完了，可以移除my_location这一行
+
 dest_name = st.selectbox("Choose one as the destination you'd like:", 
                            df_K_closest.name)
 dest_info = df_K_closest.loc[df_K_closest['name']==dest_name]

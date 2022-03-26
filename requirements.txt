@@ -3,4 +3,4 @@ pandas
 streamlit
 geocoder
 geopy
-bokeh==2.2.2
+bokeh==2.4.1
