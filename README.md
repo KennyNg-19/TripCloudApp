@@ -2,7 +2,7 @@
 A simple web-based app for Cloud Computing group assignment
 
 ## Installation
-请按照requirements.txt里面的**版本**，安装依赖包;
+请按照requirements.txt里面的**版本**，安装依赖; **如果有新加入的library，请一并更新requirements.txt**
 
 > pip install -r requirements.txt
 
