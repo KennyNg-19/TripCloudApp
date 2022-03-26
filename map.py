@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-# 压制WSettingWithCopyWarning的warning
+# 压制SettingWithCopyWarning的warning
 pd.set_option('mode.chained_assignment', None)
 
 import numpy as np
