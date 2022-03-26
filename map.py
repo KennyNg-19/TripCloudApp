@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
+
+
 import numpy as np
+
 
 # bokeh==2.2.2
 from bokeh.io import output_notebook, show, output_file
@@ -43,7 +46,7 @@ df_with_type = df.loc[df.type == tp]
 dis2me = [] # add a new colm
 for idx, row in df_with_type.iterrows():
      dis2me.append(geopy.distance.distance(my_lan_lon, [row.lat, row.lon]).km)
-df_with_type['dis2me'] = dis2me
+df_with_type.loc[:, 'dis2me'] = dis2me # add a new col
 # st.write(df_with_type)
 
 # 获取K个最近的
@@ -51,7 +54,7 @@ df_K_closest = df_with_type.nsmallest(num, 'dis2me')
 df_K_closest.reset_index(drop=True, inplace=True)
 st.write(df_K_closest.drop('type', axis=1))
 
-# new row 加入my location，一起做转化和可视化在图上
+# 同时，一行new row 加入my location，一起做转化和可视化在图上
 df_K_closest.loc[-1] = ['My loc', 'My loc', '', my_lan_lon[0], my_lan_lon[1], 0.0]
 
 
@@ -71,9 +74,9 @@ def x_coord(x, y):
 # Define coord as tuple (lat,long)
 df_K_mercat = df_K_closest.copy(deep=True)
 df_K_mercat['coordinates'] = list(zip(df_K_mercat['lat'], df_K_mercat['lon']))
-# Obtain list of mercator coordinates
-mercators = [x_coord(x, y) for x, y in df_K_mercat['coordinates'] ]
 
+# Obtain list of mercator coordinates
+mercators = [x_coord(x, y) for x, y in df_K_mercat['coordinates']]
 # Create mercator column in our df_K_closest
 df_K_mercat['mercator'] = mercators
 # Split that column out into two separate columns - mercator_x and mercator_y
