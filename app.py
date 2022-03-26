@@ -50,7 +50,7 @@ for idx, row in df_with_type.iterrows():
 df_with_type.loc[:, 'dis2me'] = dis2me # add a new col
 # st.write(df_with_type)
 
-# 获取K个最近的
+# 获取K个最近的地点
 df_K_closest = df_with_type.nsmallest(num, 'dis2me')
 df_K_closest.reset_index(drop=True, inplace=True)
 st.write(df_K_closest.drop('type', axis=1))
@@ -126,4 +126,5 @@ st.write(f"You choose {dest_name} as destination!")
 dest_info
 
 # TODO:  通过dest_info这个经纬度，可以进一步获取停车场信息了...
+
 
