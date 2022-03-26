@@ -135,13 +135,16 @@ def check_availability(parks, availability=None):
 # print(check_availability(["BH1", "BH2", "KJM1", "KJ3", "AH1"]))
 
 
-# running example: 
-# for a selected place, e.g. VIP Hotel
+# # running example: 
+# # for a selected place, e.g. VIP Hotel, coordinates [1.315874, 103.834639]
+# with open("data/carpark_coordinates.json") as fin:
+#     coordinates = json.load(fin)
 # with open("data/closest_parking_lot.json") as fin:
 #     closest_parking_lot = json.load(fin)
 # VIP_Hotel_closest = closest_parking_lot["VIP Hotel"]
-# print(VIP_Hotel_closest) # ['BH1', 'BH2', 'KJM1', 'KJ3', 'AH1']
-# print(check_availability(VIP_Hotel_closest)) # ['47', '39', '162', '145', '125']
+# print("Closest parking lots: ", VIP_Hotel_closest) # ['BH1', 'BH2', 'KJM1', 'KJ3', 'AH1']
+# print("Their coordinates: ", [coordinates[name] for name in VIP_Hotel_closest]) # [[1.3249913646328675, 103.8424599258254], [1.3260459729073188, 103.842761303002], [1.3160936666077356, 103.84879589885311], [1.3144266158666138, 103.84993059473969], [1.3282834951094042, 103.84461988914597]]
+# print("Remaining lots: ", check_availability(VIP_Hotel_closest)) # ['47', '39', '162', '145', '125']
 
 
 
