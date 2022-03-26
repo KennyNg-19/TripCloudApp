@@ -133,3 +133,19 @@ def check_availability(parks, availability=None):
     record = [availability[name] for name in parks]
     return record
 # print(check_availability(["BH1", "BH2", "KJM1", "KJ3", "AH1"]))
+
+
+# running example: 
+# for a selected place, e.g. VIP Hotel
+# with open("data/closest_parking_lot.json") as fin:
+#     closest_parking_lot = json.load(fin)
+# VIP_Hotel_closest = closest_parking_lot["VIP Hotel"]
+# print(VIP_Hotel_closest) # ['BH1', 'BH2', 'KJM1', 'KJ3', 'AH1']
+# print(check_availability(VIP_Hotel_closest)) # ['47', '39', '162', '145', '125']
+
+
+
+
+
+
+
