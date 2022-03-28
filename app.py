@@ -5,6 +5,8 @@ pd.set_option('mode.chained_assignment', None)
 
 import numpy as np
 
+import warnings
+warnings.filterwarnings("ignore")
 
 # bokeh==2.2.2
 from bokeh.io import output_notebook, show, output_file
@@ -118,13 +120,11 @@ st.write(p)
 
 # 获取用户选择的目的地
 df_K_closest = df_K_closest.iloc[:-1] # 已经显示完了，可以移除my_location这一行
-
-dest_name = st.selectbox("Choose one as the destination you'd like:", 
-                           df_K_closest.name)
+dest_name = st.selectbox("Choose one as the destination you'd like:",
+                           pd.Series(" ").append(df_K_closest.name))
 dest_info = df_K_closest.loc[df_K_closest['name']==dest_name]
 st.write(f"You choose {dest_name} as destination!")
 dest_info
-
 # TODO:  通过dest_info这个经纬度，可以进一步获取停车场信息了...
 
 
