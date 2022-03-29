@@ -8,7 +8,7 @@ import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
 
-# bokeh==2.2.2
+# bokeh==2.4.1， not latest 2.4.2
 from bokeh.io import output_notebook, show, output_file
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.tile_providers import get_provider, Vendors
