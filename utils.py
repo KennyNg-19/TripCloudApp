@@ -79,8 +79,8 @@ def convert_hdb_parking_data(hdb_data_path="data/hdb-carpark-information.csv", s
         with open(save_path + "carpark_coordinates.json", "w") as fout:
             json.dump(record, fout)
     return record
-carpark_coord = convert_hdb_parking_data(save_path="data/")
-print(len(carpark_coord)) # 2176
+# carpark_coord = convert_hdb_parking_data(save_path="data/")
+# print(len(carpark_coord)) # 2176
 
 
 def scaled_euclidean_dis(x1, y1, x2, y2, scaling=1000):
