@@ -69,8 +69,11 @@ def convert_hdb_parking_data(hdb_data_path="data/hdb-carpark-information.csv", s
     record = dict()
     for idx, row in tqdm(df.iterrows()):
         carpark_num = row["car_park_no"]
+        address     = row["address"]
         x_coord, y_coord = row["x_coord"], row["y_coord"]
-        record[carpark_num] = get_lat_and_long(x_coord, y_coord)
+        # record[carpark_num] = get_lat_and_long(x_coord, y_coord)
+        x_coord, y_coord = get_lat_and_long(x_coord, y_coord)
+        record[carpark_num] = [x_coord, y_coord, address]
     if save_path:
         if not os.path.exists(save_path):
             os.makedirs(save_path)
