@@ -1,3 +1,4 @@
+from utils import *
 import streamlit as st
 import pandas as pd
 # 压制SettingWithCopyWarning的warning
@@ -116,15 +117,40 @@ p.triangle(x = 'mercator_x', y = 'mercator_y',
 # Show map
 # st.bokeh_chart(p)
 st.write(p)
+
+
 # ----------------------------end of graph--------------------------------------
+# 读取停车场信息
+with open("data/carpark_coordinates.json") as fin:
+    coordinates = json.load(fin)
+with open("data/closest_parking_lot.json") as fin:
+    closest_parking_lot = json.load(fin)
 
 # 获取用户选择的目的地
-df_K_closest = df_K_closest.iloc[:-1] # 已经显示完了，可以移除my_location这一行
+df_K_closest = df_K_closest.iloc[:-1]
+# dest_name = df_K_closest.name[0]
 dest_name = st.selectbox("Choose one as the destination you'd like:",
                            pd.Series(" ").append(df_K_closest.name))
-dest_info = df_K_closest.loc[df_K_closest['name']==dest_name]
+# dest_info = df_K_closest.loc[df_K_closest['name']==dest_name]
 st.write(f"You choose {dest_name} as destination!")
-dest_info
-# TODO:  通过dest_info这个经纬度，可以进一步获取停车场信息了...
+
+# 获取目的地经纬度
+dest_lat = df_K_closest.loc[df_K_closest['name']==dest_name].iat[0,3]
+dest_lon = df_K_closest.loc[df_K_closest['name']==dest_name].iat[0,4]
+
+# 找到附近的停车场
+closest_carpark = closest_parking_lot[dest_name]
+
+# 展示附近停车场信息
+carpark_info = []
+for i in closest_carpark:
+    distance = distance_from_dest(dest_lat, dest_lon, coordinates[i][0], coordinates[i][1])
+    new_row = [i,coordinates[i][0],coordinates[i][1],check_availability([i])[0],distance]
+    carpark_info.append(new_row)
+df_carpark = pd.DataFrame(carpark_info)
+df_carpark.columns = ["carpark_number", "lat", "lon", "number_of_available_lots", "distance_from_dest"]
+
+st.write(df_carpark)
+
 
 

@@ -7,6 +7,8 @@ import numpy as np
 from collections import defaultdict
 from tqdm import tqdm
 
+import geopy.distance
+
 #########################################
 # may need to add timer for api callers
 #########################################
@@ -133,6 +135,10 @@ def check_availability(parks, availability=None):
     record = [availability[name] for name in parks]
     return record
 # print(check_availability(["BH1", "BH2", "KJM1", "KJ3", "AH1"]))
+
+
+def distance_from_dest(dest_lat, dest_lon, carpark_lat,car_park_lon):
+    return geopy.distance.distance([dest_lat, dest_lon], [carpark_lat,car_park_lon]).km
 
 
 # # running example: 

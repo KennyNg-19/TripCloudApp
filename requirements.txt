@@ -4,3 +4,4 @@ streamlit
 geocoder
 geopy
 bokeh==2.4.1
+tqdm
