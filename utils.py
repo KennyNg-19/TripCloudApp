@@ -64,24 +64,23 @@ def convert_hdb_parking_data(hdb_data_path="data/hdb-carpark-information.csv", s
     # input:
     # hdb_data_path, save_path: str, file paths
     # output:
-    # record: dict {car_park_num <- identifier: {lat, long, or something needed (determined later)} <- info}
+    # record: dict {car_park_num <- identifier: [lat, long, address, short_term_parking, fress_parking, night_parking, gantry_height] <- info}
     df = pd.read_csv(hdb_data_path)
     record = dict()
     for idx, row in tqdm(df.iterrows()):
         carpark_num = row["car_park_no"]
-        address     = row["address"]
         x_coord, y_coord = row["x_coord"], row["y_coord"]
         # record[carpark_num] = get_lat_and_long(x_coord, y_coord)
         x_coord, y_coord = get_lat_and_long(x_coord, y_coord)
-        record[carpark_num] = [x_coord, y_coord, address]
+        record[carpark_num] = [x_coord, y_coord, row["address"], row["short_term_parking"], row["free_parking"], row["night_parking"], row["gantry_height"]]
     if save_path:
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         with open(save_path + "carpark_coordinates.json", "w") as fout:
             json.dump(record, fout)
     return record
-# carpark_coord = convert_hdb_parking_data(save_path="data/")
-# print(len(carpark_coord)) # 2176
+carpark_coord = convert_hdb_parking_data(save_path="data/")
+print(len(carpark_coord)) # 2176
 
 
 def scaled_euclidean_dis(x1, y1, x2, y2, scaling=1000):
