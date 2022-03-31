@@ -61,18 +61,17 @@ st.write(df_K_closest.drop('type', axis=1))
 # 同时，一行new row 加入my location，一起做转化和可视化在图上
 df_K_closest.loc[-1] = ['My loc', 'My loc', '', my_lan_lon[0], my_lan_lon[1], 0.0]
 
-
-# ------------------画图-----------------------
+# ------------------画图准备-----------------------
 # 为了Bokeh的画图： Define function to switch from lat/long to mercator coordinates
 def x_coord(x, y):
     lat = x
     lon = y
-    
+
     r_major = 6378137.000
     x = r_major * np.radians(lon)
-    scale = x/lon
-    y = 180.0/np.pi * np.log(np.tan(np.pi/4.0 + 
-        lat * (np.pi/180.0)/2.0)) * scale
+    scale = x / lon
+    y = 180.0 / np.pi * np.log(np.tan(np.pi / 4.0 +
+                                      lat * (np.pi / 180.0) / 2.0)) * scale
     return (x, y)
 
 # Define coord as tuple (lat,long)
@@ -92,10 +91,6 @@ chosentile = get_provider(Vendors.STAMEN_TONER)
 # Choose palette
 palette = PRGn[10]
 
-# Tell Bokeh to use df as the source of the data
-df_places = ColumnDataSource(data=df_K_mercat.iloc[:-1])
-df_myloc = ColumnDataSource(data=df_K_mercat.iloc[-1:])
-
 # Set tooltips - these appear when we hover over a data point in our map, very nifty and very useful
 tooltips = [("Place","@name"), ("Addr", "@address")]
 
@@ -106,21 +101,14 @@ p = figure(title = 'Places@Singapore', x_axis_type="mercator", y_axis_type="merc
 
 # Add map tile
 p.add_tile(chosentile)
+df_myloc = ColumnDataSource(data=df_K_mercat.iloc[-1:])
 
-# Add place points using mercator coordinates
-p.circle(x = 'mercator_x', y = 'mercator_y',
-         source=df_places, size=15, fill_alpha = .7)
 # and the point for my location
-p.triangle(x = 'mercator_x', y = 'mercator_y',
-         source=df_myloc, size=25, fill_alpha = 1, color='red')
+p.triangle(x='mercator_x', y='mercator_y',
+           source=df_myloc, size=25, fill_alpha=1, color='red')
+#-------------------准备end--------------------
 
-# Show map
-# st.bokeh_chart(p)
-st.write(p)
-
-
-# ----------------------------end of graph--------------------------------------
-# 读取停车场信息
+#选择地点并获取附近停车场
 with open("data/carpark_coordinates.json") as fin:
     coordinates = json.load(fin)
 with open("data/closest_parking_lot.json") as fin:
@@ -132,25 +120,42 @@ df_K_closest = df_K_closest.iloc[:-1]
 dest_name = st.selectbox("Choose one as the destination you'd like:",
                            pd.Series(" ").append(df_K_closest.name))
 # dest_info = df_K_closest.loc[df_K_closest['name']==dest_name]
-st.write(f"You choose {dest_name} as destination!")
+if dest_name == " ":
+    df_places = ColumnDataSource(data=df_K_mercat.iloc[:-1])
 
-# 获取目的地经纬度
-dest_lat = df_K_closest.loc[df_K_closest['name']==dest_name].iat[0,3]
-dest_lon = df_K_closest.loc[df_K_closest['name']==dest_name].iat[0,4]
+    p.circle(x='mercator_x', y='mercator_y',
+             source=df_places, size=15, fill_alpha=.7)
+else:
+    st.write(f"You choose {dest_name} as destination!")
+    # 获取目的地经纬度
+    dest_lat = df_K_closest.loc[df_K_closest['name']==dest_name].iat[0,3]
+    dest_lon = df_K_closest.loc[df_K_closest['name']==dest_name].iat[0,4]
 
-# 找到附近的停车场
-closest_carpark = closest_parking_lot[dest_name]
+    # 找到附近的停车场
+    closest_carpark = closest_parking_lot[dest_name]
 
-# 展示附近停车场信息
-carpark_info = []
-for i in closest_carpark:
-    distance = distance_from_dest(dest_lat, dest_lon, coordinates[i][0], coordinates[i][1])
-    new_row = [i,coordinates[i][0],coordinates[i][1],check_availability([i])[0],distance]
-    carpark_info.append(new_row)
-df_carpark = pd.DataFrame(carpark_info)
-df_carpark.columns = ["carpark_number", "lat", "lon", "number_of_available_lots", "distance_from_dest"]
+    # 展示附近停车场信息
+    carpark_info = []
+    for i in closest_carpark:
+        distance = distance_from_dest(dest_lat, dest_lon, coordinates[i][0], coordinates[i][1])
+        new_row = [i,coordinates[i][0],coordinates[i][1],check_availability([i])[0],distance]
+        carpark_info.append(new_row)
+    df_carpark = pd.DataFrame(carpark_info)
+    df_carpark.columns = ["carpark_number", "lat", "lon", "number_of_available_lots", "distance_from_dest"]
 
-st.write(df_carpark)
+    st.write(df_carpark)
+
+    df_choose_places = ColumnDataSource(data=df_K_mercat.loc[df_K_mercat['name']==dest_name])
+    p.circle(x='mercator_x', y='mercator_y',
+             source=df_choose_places, size=15, fill_alpha=.7)
+
+    ##附近停车场地点画图
+    # df_closest_carpark = ColumnDataSource(data=closest_carpark)
+    # p.circle(x='mercator_x', y='mercator_y',
+    #          source=df_closest_carpark, size=15, fill_alpha=.7,color='red')
+
+
+st.write(p)
 
 
 
