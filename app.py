@@ -25,23 +25,19 @@ my_lan_lon = geocoder.ip('me').latlng
 # TODO: function for calculate distance: mgeopy.distance.distance(coord1, corrd2)
 import geopy.distance
 
-
-# import bokeh
-# bokeh.__version__
-
 st.title('TripElite')
 st.subheader("- A platform for finding entertainment and carpark places.")
 
 # read data
 df = pd.read_csv("sg-places-new.csv").dropna()
 
+st.write("### 1.Find Entertainment places nearby")
 tp = st.selectbox("Place type", df['type'].unique())
 
 num = st.selectbox("No. of the place(Less than 10)", range(1,11))
 
 # 需要根据位置坐标，排序
-st.write(f"Your geolocation is {my_lan_lon}.")
-st.write(f"{num} closest {tp} is/are:")
+st.write(f"Your geolocation is {my_lan_lon}, {num} closest {tp} is/are:")
 
 # filter by type
 df_with_type = df.loc[df.type == tp]
@@ -84,10 +80,8 @@ mercators = [x_coord(x, y) for x, y in df_K_mercat['coordinates']]
 df_K_mercat['mercator'] = mercators
 # Split that column out into two separate columns - mercator_x and mercator_y
 df_K_mercat[['mercator_x', 'mercator_y']] = df_K_mercat['mercator'].apply(pd.Series)
-
 # Select tile set to use
 chosentile = get_provider(Vendors.STAMEN_TONER)
-
 # Choose palette
 palette = PRGn[10]
 
@@ -103,8 +97,8 @@ p = figure(title = 'Places@Singapore', x_axis_type="mercator", y_axis_type="merc
 p.add_tile(chosentile)
 df_myloc = ColumnDataSource(data=df_K_mercat.iloc[-1:])
 
-# and the point for my location
-p.triangle(x='mercator_x', y='mercator_y',
+# 始终显示 the point for my location
+p.inverted_triangle(x='mercator_x', y='mercator_y',
            source=df_myloc, size=25, fill_alpha=1, color='red')
 #-------------------准备end--------------------
 
@@ -114,19 +108,25 @@ with open("data/carpark_coordinates.json") as fin:
 with open("data/closest_parking_lot.json") as fin:
     closest_parking_lot = json.load(fin)
 
+
 # 获取用户选择的目的地
+st.write("### 2.Choose your Destination, then Carpark info. will show up.")
 df_K_closest = df_K_closest.iloc[:-1]
 # dest_name = df_K_closest.name[0]
-dest_name = st.selectbox("Choose one as the destination you'd like:",
+dest_name = st.selectbox(f"Choose a destination from the {num} nearest places above",
                            pd.Series(" ").append(df_K_closest.name))
 # dest_info = df_K_closest.loc[df_K_closest['name']==dest_name]
+
+# ------------------判定显示：places 还是 停车场， 信息-----------------
 if dest_name == " ":
     df_places = ColumnDataSource(data=df_K_mercat.iloc[:-1])
 
     p.circle(x='mercator_x', y='mercator_y',
              source=df_places, size=15, fill_alpha=.7)
 else:
-    st.write(f"You choose {dest_name} as destination!")
+    st.write(f"You choose {dest_name} as destination(blue traingle)!")
+    st.write("The Parking info are shown as above(green circle):")
+    
     # 获取目的地经纬度
     dest_lat = df_K_closest.loc[df_K_closest['name']==dest_name].iat[0,3]
     dest_lon = df_K_closest.loc[df_K_closest['name']==dest_name].iat[0,4]
@@ -145,14 +145,15 @@ else:
 
     st.write(df_carpark)
 
+    # 绘制选定destination—— 还是用蓝色 换成正三角
     df_choose_places = ColumnDataSource(data=df_K_mercat.loc[df_K_mercat['name']==dest_name])
-    p.circle(x='mercator_x', y='mercator_y',
-             source=df_choose_places, size=15, fill_alpha=.7)
+    p.triangle(x='mercator_x', y='mercator_y',
+                source=df_choose_places, size=20, fill_alpha=1)
 
-    ##附近停车场地点画图
+    ## 选定destination 附近停车场地点, 画图 —— 绿色点
     # df_closest_carpark = ColumnDataSource(data=closest_carpark)
     # p.circle(x='mercator_x', y='mercator_y',
-    #          source=df_closest_carpark, size=15, fill_alpha=.7,color='red')
+    #          source=df_closest_carpark, size=15, fill_alpha=.7, color="green")
 
 
 st.write(p)
