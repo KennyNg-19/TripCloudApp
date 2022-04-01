@@ -99,7 +99,7 @@ def find_closest_N_carpark(places, carparks, N=5, save_path=None):
     # output:
     # record: dict {place_name: [ parking lot identifier ]}
     carpark_id = list(carparks.keys())
-    carpark_coord = np.array([v for _, v in carparks.items()])
+    carpark_coord = np.array([v[:2] for _, v in carparks.items()])
     
     scaling = 1000 ######
     record = defaultdict(list)
