@@ -125,8 +125,8 @@ if dest_name == " ":
     p.circle(x='mercator_x', y='mercator_y',
              source=df_places, size=15, fill_alpha=.7)
 else:
-    st.write(f"You choose {dest_name} as destination(blue traingle)!")
-    st.write("The Parking info are shown as above(green circle):")
+    st.write(f"You choose {dest_name} as destination(<font color=‘blue’>blue traingle</font>)!", unsafe_allow_html=True)
+    st.write("The Parking info are shown as above(<font color=green>green circle</font>):", unsafe_allow_html=True)
     
     # 获取目的地经纬度
     dest_lat = df_K_closest.loc[df_K_closest['name']==dest_name].iat[0,3]
@@ -147,7 +147,7 @@ else:
     df_carpark.columns = ["name", "loc", "address", "number_of_available_lots", "distance_from_dest (km)"]
 
     st.write(df_carpark.drop('loc', axis=1))
-    st.write(df_K_mercat)
+    # st.write(df_K_mercat)
 
     # Obtain list of mercator coordinates
     carpark_mercators = [x_coord(x, y) for x, y in df_carpark['loc']]
