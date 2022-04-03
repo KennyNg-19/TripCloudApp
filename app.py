@@ -144,9 +144,10 @@ else:
         carpark_info.append(new_row)
     df_carpark = pd.DataFrame(carpark_info)
     # df_carpark.columns = ["carpark_number", "lat", "lon", "number_of_available_lots", "distance_from_dest"]
-    df_carpark.columns = ["carpark_number", "loc", "address", "number_of_available_lots", "distance_from_dest (km)"]
+    df_carpark.columns = ["name", "loc", "address", "number_of_available_lots", "distance_from_dest (km)"]
 
     st.write(df_carpark.drop('loc', axis=1))
+    st.write(df_K_mercat)
 
     # Obtain list of mercator coordinates
     carpark_mercators = [x_coord(x, y) for x, y in df_carpark['loc']]
