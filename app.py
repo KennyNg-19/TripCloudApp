@@ -118,6 +118,12 @@ dest_name = st.selectbox(f"Choose a destination from the {num} nearest places ab
                            pd.Series(" ").append(df_K_closest.name))
 # dest_info = df_K_closest.loc[df_K_closest['name']==dest_name]
 
+###########################################################
+# pre-call this function to save time
+# THIS IS TIME CONSUMING. DO NOT CALL THIS TOO FREQUENTLY.
+available_parking_lots = get_current_parking_data()
+###########################################################
+
 # ------------------判定显示：places 还是 停车场， 信息-----------------
 if dest_name == " ":
     df_places = ColumnDataSource(data=df_K_mercat.iloc[:-1])
@@ -140,7 +146,8 @@ else:
     for i in closest_carpark:
         distance = distance_from_dest(dest_lat, dest_lon, coordinates[i][0], coordinates[i][1])
         # new_row = [i,coordinates[i][0],coordinates[i][1],check_availability([i])[0],distance]
-        new_row = [i,[coordinates[i][0],coordinates[i][1]],coordinates[i][2],check_availability([i])[0],distance]
+        # new_row = [i,[coordinates[i][0],coordinates[i][1]],coordinates[i][2],check_availability([i])[0],distance]
+        new_row = [i, [coordinates[i][0], coordinates[i][1]], coordinates[i][2], check_availability(i, available_parking_lots), distance] # input of check_availability has been redesigned
         carpark_info.append(new_row)
     df_carpark = pd.DataFrame(carpark_info)
     # df_carpark.columns = ["carpark_number", "lat", "lon", "number_of_available_lots", "distance_from_dest"]

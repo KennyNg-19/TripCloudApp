@@ -129,12 +129,14 @@ def find_closest_N_carpark(places, carparks, N=5, save_path=None):
 def check_availability(parks, availability=None):
     # given a list of desired parking lots id, return remaining lots for each in the same order
     # input:
-    # parks: list, [ carparking_id ]
+    # parks: str, carparking_id
     # output: 
     # record: list, [ remain_lots ]
     if not availability:
         availability = get_current_parking_data()
-    record = [availability[name] for name in parks]
+    record = "N/A"
+    if parks in availability.keys():
+        record = availability[parks]
     return record
 # print(check_availability(["BH1", "BH2", "KJM1", "KJ3", "AH1"]))
 
@@ -154,9 +156,20 @@ def distance_from_dest(dest_lat, dest_lon, carpark_lat,car_park_lon):
 # print("Their coordinates: ", [coordinates[name] for name in VIP_Hotel_closest]) # [[1.3249913646328675, 103.8424599258254], [1.3260459729073188, 103.842761303002], [1.3160936666077356, 103.84879589885311], [1.3144266158666138, 103.84993059473969], [1.3282834951094042, 103.84461988914597]]
 # print("Remaining lots: ", check_availability(VIP_Hotel_closest)) # ['47', '39', '162', '145', '125']
 
+###################################################
 
+# avai = get_current_parking_data()
+# k_avai = set(avai.keys()) # len: 1960
+# with open("data/carpark_coordinates.json") as fin:
+#     coord = json.load(fin)
+# k_coord = set(coord.keys()) # len: 2176
+# print(len(k_avai), len(k_coord))
 
+# uni = (k_avai & k_coord) # len: 1893
+# print(len(uni))
 
+# print(len(k_coord - k_avai)) # 287
 
+####################################################
 
 
