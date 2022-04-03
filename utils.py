@@ -131,7 +131,7 @@ def check_availability(parks, availability=None):
     # input:
     # parks: str, carparking_id
     # output: 
-    # record: list, [ remain_lots ]
+    # record: int or str, remain_lots or N/A
     if not availability:
         availability = get_current_parking_data()
     record = "N/A"
