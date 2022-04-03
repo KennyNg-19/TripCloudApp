@@ -85,6 +85,7 @@ chosentile = get_provider(Vendors.STAMEN_TONER)
 # Choose palette
 palette = PRGn[10]
 
+
 # Set tooltips - these appear when we hover over a data point in our map, very nifty and very useful
 tooltips = [("Place","@name"), ("Addr", "@address")]
 
@@ -138,22 +139,31 @@ else:
     carpark_info = []
     for i in closest_carpark:
         distance = distance_from_dest(dest_lat, dest_lon, coordinates[i][0], coordinates[i][1])
-        new_row = [i,coordinates[i][0],coordinates[i][1],check_availability([i])[0],distance]
+        # new_row = [i,coordinates[i][0],coordinates[i][1],check_availability([i])[0],distance]
+        new_row = [i,[coordinates[i][0],coordinates[i][1]],coordinates[i][2],check_availability([i])[0],distance]
         carpark_info.append(new_row)
     df_carpark = pd.DataFrame(carpark_info)
-    df_carpark.columns = ["carpark_number", "lat", "lon", "number_of_available_lots", "distance_from_dest"]
+    # df_carpark.columns = ["carpark_number", "lat", "lon", "number_of_available_lots", "distance_from_dest"]
+    df_carpark.columns = ["carpark_number", "loc", "address", "number_of_available_lots", "distance_from_dest (km)"]
 
-    st.write(df_carpark)
+    st.write(df_carpark.drop('loc', axis=1))
+
+    # Obtain list of mercator coordinates
+    carpark_mercators = [x_coord(x, y) for x, y in df_carpark['loc']]
+    # Create mercator column in our df_K_closest
+    df_carpark['mercator'] = carpark_mercators
+    # Split that column out into two separate columns - mercator_x and mercator_y
+    df_carpark[['mercator_x', 'mercator_y']] = df_carpark['mercator'].apply(pd.Series)
 
     # 绘制选定destination—— 还是用蓝色 换成正三角
     df_choose_places = ColumnDataSource(data=df_K_mercat.loc[df_K_mercat['name']==dest_name])
     p.triangle(x='mercator_x', y='mercator_y',
                 source=df_choose_places, size=20, fill_alpha=1)
 
-    ## 选定destination 附近停车场地点, 画图 —— 绿色点
-    # df_closest_carpark = ColumnDataSource(data=closest_carpark)
-    # p.circle(x='mercator_x', y='mercator_y',
-    #          source=df_closest_carpark, size=15, fill_alpha=.7, color="green")
+    # 选定destination 附近停车场地点, 画图 —— 绿色点
+    df_closest_carpark = ColumnDataSource(data=df_carpark)
+    p.circle(x='mercator_x', y='mercator_y',
+             source=df_closest_carpark, size=15, fill_alpha=.7, color="green")
 
 
 st.write(p)
