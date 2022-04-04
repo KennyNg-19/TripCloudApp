@@ -48,6 +48,7 @@ tp = st.selectbox("Place type", df['type'].unique())
 
 num = st.selectbox("No. of closest places(Less than 10)", range(1,11))
 
+# 有输入了，再生成DF+画图
 if input_destination:
     # 需要根据位置坐标，排序
     st.write(f"Your place geolocation is {[round(num, 3) for num in my_lan_lon]}, \
@@ -69,24 +70,10 @@ if input_destination:
     st.write(df_K_closest.drop('type', axis=1))
 
     # 同时，一行new row 加入my location，一起做转化和可视化在图上
-    df_K_closest.loc[-1] = ['My loc', 'My loc', '', my_lan_lon[0], my_lan_lon[1], 0.0]
+    df_K_closest.loc[-1] = [input_destination, info_dict['display_name'], '', my_lan_lon[0], my_lan_lon[1], 0.0]
 
-# ------------------画图准备-----------------------
-# 为了Bokeh的画图： Define function to switch from lat/long to mercator coordinates
-def x_coord(x, y):
-    lat = x
-    lon = y
+    # ------------------------Boken 画图准备-----------------------
 
-    r_major = 6378137.000
-    x = r_major * np.radians(lon)
-    scale = x / lon
-    y = 180.0 / np.pi * np.log(np.tan(np.pi / 4.0 +
-                                      lat * (np.pi / 180.0) / 2.0)) * scale
-    return (x, y)
-
-
-# 有输入了，再画图
-if input_destination:
     # Define coord as tuple (lat,long)
     df_K_mercat = df_K_closest.copy(deep=True)
     df_K_mercat['coordinates'] = list(zip(df_K_mercat['lat'], df_K_mercat['lon']))
@@ -102,9 +89,8 @@ if input_destination:
     # Choose palette
     palette = PRGn[10]
 
-
     # Set tooltips - these appear when we hover over a data point in our map, very nifty and very useful
-    tooltips = [("Place","@name"), ("Addr", "@address")]
+    tooltips = [("Place Name","@name"), ("Address", "@address")]
 
     # Create figure
     p = figure(title = 'Places@Singapore', x_axis_type="mercator", y_axis_type="mercator",
@@ -126,9 +112,8 @@ if input_destination:
     with open("data/closest_parking_lot.json") as fin:
         closest_parking_lot = json.load(fin)
 
-
     # 获取用户选择的目的地
-    st.write("### 2.Choose your Destination, then Carpark info. will show up.")
+    st.write("### 2.Choose a Place, then Carpark info will show up.")
     df_K_closest = df_K_closest.iloc[:-1]
     # dest_name = df_K_closest.name[0]
     dest_name = st.selectbox(f"Choose a destination from the {num} nearest places above",
@@ -141,13 +126,14 @@ if input_destination:
     available_parking_lots = get_current_parking_data()
     ###########################################################
 
-    # ------------------判定显示：places 还是 停车场， 信息-----------------
-    if dest_name == " ":
+    # ------------------判定显示：选定的places VS 停车场-----------------
+    if dest_name == " ": # 第一幅图
         df_places = ColumnDataSource(data=df_K_mercat.iloc[:-1])
 
         p.circle(x='mercator_x', y='mercator_y',
                 source=df_places, size=15, fill_alpha=.7)
-    else:
+    
+    else: # 第二幅图，停车信息
         st.write(f"You choose {dest_name} as destination(<font color=‘blue’>blue traingle</font>)!", unsafe_allow_html=True)
         st.write("The Parking info are shown as above(<font color=green>green circle</font>):", unsafe_allow_html=True)
         
@@ -180,7 +166,7 @@ if input_destination:
         # Split that column out into two separate columns - mercator_x and mercator_y
         df_carpark[['mercator_x', 'mercator_y']] = df_carpark['mercator'].apply(pd.Series)
 
-        # 绘制选定destination—— 还是用蓝色 换成正三角
+        # 绘制选定destination—— 用, 蓝色正三角
         df_choose_places = ColumnDataSource(data=df_K_mercat.loc[df_K_mercat['name']==dest_name])
         p.triangle(x='mercator_x', y='mercator_y',
                     source=df_choose_places, size=20, fill_alpha=1)
