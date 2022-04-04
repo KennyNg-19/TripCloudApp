@@ -126,6 +126,30 @@ def find_closest_N_carpark(places, carparks, N=5, save_path=None):
 # find_closest_N_carpark(places, carparks, save_path="data/")
 
 
+def NV_find_closest_N_carpark(place_lat, place_lon, N=5, carpark_coord=None):
+    # new version, compute closest N parking lot given coordinates
+    # input:
+    # place_lat, place_lon: latitude and longitude of a desired place, str or float
+    # N: num of output parking lots
+    # carpark_coord: dict, pre-saved parking lots information
+    # output:
+    # result: list [ "parking lot id" ]
+    if not carpark_coord:
+        with open("data/carpark_coordinates.json") as fin:
+            carpark_coord = json.load(fin)
+    
+    carpark_id    = list(carpark_coord.keys())
+    carpark_coord = np.array([v[:2] for _, v in carpark_coord.items()]) * 1000
+    place_coord   = np.array([place_lat, place_lon], dtype=float) * 1000
+    distance = np.power(carpark_coord - place_coord, 2).sum(axis=1)
+    distance = np.sqrt(distance)
+    result = []
+    for idx in np.argsort(distance)[:N]:
+        result.append(carpark_id[idx])
+    return result
+# print(NV_find_closest_N_carpark(place_lat=1.315874, place_lon=103.834639)) # ['BH1', 'BH2', 'KJM1', 'KJ3', 'AH1']
+
+
 def check_availability(parks, availability=None):
     # given a list of desired parking lots id, return remaining lots for each in the same order
     # input:

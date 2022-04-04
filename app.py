@@ -142,7 +142,9 @@ if input_destination:
         dest_lon = df_K_closest.loc[df_K_closest['name']==dest_name].iat[0,4]
 
         # 找到附近的停车场
-        closest_carpark = closest_parking_lot[dest_name]
+        # closest_carpark = closest_parking_lot[dest_name]
+        # use new version
+        closest_carpark = NV_find_closest_N_carpark(dest_lat, dest_lon, N=5, carpark_coord=coordinates) 
 
         # 展示附近停车场信息
         carpark_info = []
