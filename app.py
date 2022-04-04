@@ -30,7 +30,7 @@ import geocoder
 
 # 标题
 st.title('TripElite 🚗 💨')
-st.subheader("- A platform for finding entertainment and carpark places around your destination.")
+st.subheader("- Help find entertainment & carpark places around you")
 
 # read data
 df = pd.read_csv("sg-places-new.csv").dropna()
@@ -44,7 +44,7 @@ geolocator = Nominatim(user_agent="example app")
 
 # step0的处理目的地输入异常
 try:
-    input_destination = st.text_input("A place name in SG, PRESS Enter!")
+    input_destination = st.text_input("A formal place name in SG, PRESS Enter!")
     info_dict = geolocator.geocode(input_destination + " , Singapore").raw
 except AttributeError as e:
     st.write(f"### Note: Your input place \"{input_destination}\" cannot \
