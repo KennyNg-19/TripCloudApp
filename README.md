@@ -5,6 +5,7 @@ A simple web-based app for Cloud Computing group assignment
 Pliease install python modules based on the versions in requirements.txt.
 - optional: if you don't wanna make your current conda enviroment messy, please create a new one as below:
     > conda create -n YOUR_ENV_NAME python=3.8
+    >
     > conda activate YOUR_ENV_NAME
 
 then, install dependacies.
