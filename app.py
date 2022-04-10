@@ -12,7 +12,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # bokeh==2.4.1， not latest 2.4.2
-from bokeh.io import output_notebook, show, output_file
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.tile_providers import get_provider, Vendors
 from bokeh.palettes import PRGn, RdYlGn
@@ -35,7 +34,7 @@ st.subheader("- Help find entertainment & carpark places around you")
 # read data
 df = pd.read_csv("sg-places-new.csv").dropna()
 
-#! step0: input a 目的地, in Singapore to go
+#! step0: input a dest, in Singapore to go
 st.write("### 0. Input a Destination in SG you plan to reach:")
 
 from geopy.geocoders import Nominatim
@@ -60,31 +59,30 @@ else: # Input destination is correct, then show rest...
 
     num = st.selectbox("No. of closest places(Less than 10)", range(1,11))
 
-    # 有输入了，再生成DF+画图
+    # if input is valid
     if input_destination:
-        # 需要根据位置坐标，排序
         st.write(f"Your place geolocation is {[round(num, 3) for num in my_lan_lon]}, \
             {num} closest {tp} is/are:")
 
         # filter by type
         df_with_type = df.loc[df.type == tp]
 
-        # 计算离my_loc的距离
+        # calculate distance to your dest
         dis2me = [] # add a new colm
         for idx, row in df_with_type.iterrows():
             dis2me.append(geopy.distance.distance(my_lan_lon, [row.lat, row.lon]).km)
         df_with_type.loc[:, 'dis2me'] = dis2me # add a new col
         # st.write(df_with_type)
 
-        # 获取K个最近的地点
+        # get K losest places
         df_K_closest = df_with_type.nsmallest(num, 'dis2me')
         df_K_closest.reset_index(drop=True, inplace=True)
         st.write(df_K_closest.drop('type', axis=1))
 
-        # 同时，一行new row 加入my location，一起做转化和可视化在图上
+        # add dest location as well.
         df_K_closest.loc[-1] = [input_destination, info_dict['display_name'], '', my_lan_lon[0], my_lan_lon[1], 0.0]
 
-        # ------------------------Boken 画图准备-----------------------
+        # ------------------------Boken plot-----------------------
 
         # Define coord as tuple (lat,long)
         df_K_mercat = df_K_closest.copy(deep=True)
@@ -118,7 +116,7 @@ else: # Input destination is correct, then show rest...
                 source=df_myloc, size=25, fill_alpha=1, color='red')
     #-------------------准备end--------------------
 
-        #选择地点并获取附近停车场
+        # 选择地点并获取附近停车场
         with open("data/carpark_coordinates.json") as fin:
             coordinates = json.load(fin)
         with open("data/closest_parking_lot.json") as fin:
